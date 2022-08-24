@@ -1,27 +1,64 @@
+// import URL from './url.js';
+import axios from 'axios';
+const axios = require('axios');
+
 const searchForm = document.querySelector('#search-form');
-const searchQuery = searchForm.querySelector('input[name="searchQuery"]');
 const gallery = document.querySelector('.gallery');
-const btnSubmit = document.querySelector('button[type="button"]');
 
-btnSubmit.addEventListener('click', value);
+searchForm.addEventListener('submit', URL);
+let searchImages = '';
 
-const URL = 'https://pixabay.com/api/';
-const KEY = 'key=29453019-5a69b6c7b2f01a070c80deb0c';
-const OPHIN = `&q=cat&image_type=photo&orientation=horizontal&safesearch=true&per_page=10&page=1`;
+function URL(e) {
+  const URL = 'https://pixabay.com/api/';
+  const KEY = 'key=29453019-5a69b6c7b2f01a070c80deb0c';
+  const OPHIN = `&image_type=photo&orientation=horizontal&safesearch=true`;
 
-function cat(obj) {
-  return fetch(`${URL}?${KEY}${OPHIN}`).then(res => {
-    if (!res.ok) {
-      console.log(res.status);
-    }
-    return res.json();
-  });
+  searchImages = e.currentTarget.elements.searchQuery.value;
+  e.preventDefault();
+  return axios
+    .get(`${URL}?${KEY}${OPHIN}&q=${searchImages}`)
+    .then(res => {
+      markup(res);
+    })
+    .catch(error => {
+      // handle error
+      console.log(error);
+    });
 }
 
-function value(obj) {
-  const zviri = searchQuery.value;
-  console.log(zviri);
-  cat()
-    .then(data => console.log(data.hits))
-    .catch(error);
+function markup(res) {
+  const aaa = res.data.hits;
+  const markup = aaa
+    .map(
+      ({
+        webformatURL,
+        largeImageURL,
+        tags,
+        likes,
+        views,
+        comments,
+        downloads,
+      }) => {
+        return `
+        <div class="photo-card">
+          <img src="${webformatURL}" alt="${tags}" loading="lazy" />
+            <div class="info">
+              <p class="info-item">
+                <b>Likes: ${likes}</b>
+              </p>
+              <p class="info-item">
+                <b>Views: ${views}</b>
+              </p>
+              <p class="info-item">
+                <b>Comments: ${comments}</b>
+              </p>
+              <p class="info-item">
+                <b>Downloads: ${downloads}</b>
+              </p>
+            </div>
+        </div>`;
+      }
+    )
+    .join('');
+  gallery.insertAdjacentHTML('afterbegin', markup);
 }
