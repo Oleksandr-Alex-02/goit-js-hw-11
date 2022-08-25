@@ -1,0 +1,25 @@
+body {
+    background-color: bisque;
+    padding: 0 40px;
+}
+
+.gallery {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+}
+
+.gallery_card {
+    border: 2px;
+}
+
+.gallery_img {
+    height: 300px;
+    width: 450px;
+}
+
+.gallery_info {
+    padding: 0 10px;
+    display: flex;
+    justify-content: space-between;
+}
