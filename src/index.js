@@ -2,9 +2,11 @@
 import cards from './templates/cards.hbs';
 
 const searchForm = document.querySelector('#search-form');
+const sdf = document.querySelector('button[type="submit"]');
 const gallery = document.querySelector('.gallery');
 const clickBtn = document.querySelector('.load-more');
 // const jsGuard = document.querySelector('.js-guard');
+sdf.setAttribute('disabled', true);
 
 let page = 0;
 let value = '';
@@ -19,6 +21,7 @@ searchForm.addEventListener('submit', input);
 clickBtn.addEventListener('click', scrol);
 
 function input(e) {
+  sdf.setAttribute('disabled', true);
   e.preventDefault();
   value = e.currentTarget.elements.searchQuery.value;
   htmlMarkup();
@@ -79,5 +82,18 @@ function sms(totalHits) {
   }
   if (page === totalHits) {
     console.log("We're sorry, but you've reached the end of search results.");
+  }
+}
+
+searchForm.addEventListener('input', disabled);
+function disabled(e) {
+  value = e.currentTarget.elements.searchQuery.value;
+  if (value !== '') {
+    sdf.removeAttribute('disabled');
+    return;
+  }
+  if (value === '') {
+    sdf.setAttribute('disabled', true);
+    return;
   }
 }
