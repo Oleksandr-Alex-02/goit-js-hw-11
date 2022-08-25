@@ -4,22 +4,23 @@ body {
 }
 
 .gallery {
+    margin-top: 60px;
     display: flex;
     justify-content: space-between;
     flex-wrap: wrap;
-}
 
-.gallery_card {
-    border: 2px;
-}
+    &_card {
+        border: 2px;
+    }
 
-.gallery_img {
-    height: 300px;
-    width: 450px;
-}
+    &_img {
+        height: 300px;
+        width: 450px;
+    }
 
-.gallery_info {
-    padding: 0 10px;
-    display: flex;
-    justify-content: space-between;
+    &_info {
+        padding: 0 10px;
+        display: flex;
+        justify-content: space-between;
+    }
 }
