@@ -1,5 +1,14 @@
 // import URL from './url.js';
 import cards from './templates/cards.hbs';
+import Notiflix from 'notiflix';
+
+Notiflix.Notify.init({
+  width: '400px',
+  position: 'right-top',
+  distance: '10px',
+  borderRadius: '50px',
+  timeout: 3000,
+});
 
 const searchForm = document.querySelector('#search-form');
 const sdf = document.querySelector('button[type="submit"]');
@@ -17,14 +26,15 @@ let value = '';
 //   threshold: 1,
 // };
 
-searchForm.addEventListener('submit', input);
-clickBtn.addEventListener('click', scrol);
+searchForm.addEventListener('submit', startScript);
+clickBtn.addEventListener('click', loadMore);
 
-function input(e) {
+function startScript(e) {
   sdf.setAttribute('disabled', true);
   e.preventDefault();
   value = e.currentTarget.elements.searchQuery.value;
   htmlMarkup();
+  sms({ value });
   e.target.reset();
 }
 
@@ -37,9 +47,9 @@ function htmlMarkup() {
     gallery.insertAdjacentHTML('beforeend', markup);
     // observer.observe(jsGuard);
     const totalHits = data.totalHits;
-    sms(totalHits);
-    console.log(totalHits);
-    console.log(data);
+    const arrLength = data.hits.length;
+    sms({ totalHits, value, arrLength });
+    console.log(data.hits.length);
   });
 }
 
@@ -56,32 +66,45 @@ function htmlMarkup() {
 //   });
 // }
 
-function scrol(e) {
+function loadMore(e) {
   URL((page += 1)).then(data => {
     const markup = cards(data.hits);
     gallery.insertAdjacentHTML('beforeend', markup);
   });
 }
 
-function URL(page) {
+async function URL(page) {
   const URL = 'https://pixabay.com/api/';
   const KEY = 'key=29453019-5a69b6c7b2f01a070c80deb0c';
-  const params = `&image_type=photo&orientation=horizontal&safesearch=true&per_page=9`;
+  const params = `&image_type=photo&orientation=horizontal&safesearch=true&per_page=40`;
 
-  return fetch(`${URL}?${KEY}&q=${value}${params}&page=${page}`).then(resp =>
-    resp.json()
+  return await fetch(`${URL}?${KEY}&q=${value}${params}&page=${page}`).then(
+    resp => resp.json()
   );
 }
 
-function sms(totalHits) {
+// function wiwi() {
+//   clickBtn.removeAttribute('disabled');
+// }
+
+function sms({ totalHits, value, arrLength }) {
+  const nuber = 40;
+  console.log(nuber);
+  console.log(arrLength);
   if (totalHits >= 1) {
-    console.log('Ура нашли котіков');
+    Notiflix.Notify.success(`Hooray! We found ${totalHits} ${value}.`);
+    return;
   }
   if (totalHits === 0) {
-    console.log('печалька');
+    Notiflix.Notify.failure(
+      `Sorry, there are no images ${value} matching your search query. Please try again.`
+    );
+    return;
   }
-  if (page === totalHits) {
+  if (arrLength !== nuber) {
+    console.log(arrLength);
     console.log("We're sorry, but you've reached the end of search results.");
+    return;
   }
 }
 
@@ -91,9 +114,7 @@ function disabled(e) {
   if (value !== '') {
     sdf.removeAttribute('disabled');
     return;
-  }
-  if (value === '') {
+  } else {
     sdf.setAttribute('disabled', true);
-    return;
   }
 }
