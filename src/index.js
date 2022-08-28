@@ -88,8 +88,7 @@ function disabledBtnSearch() {
 
 searchForm.addEventListener('input', controlBtnDisabled);
 function controlBtnDisabled(e) {
-  value = e.currentTarget.searchQuery.value;
-  console.log(value);
+  const value = e.currentTarget.searchQuery.value;
   if (value !== '') {
     btnSubmit.removeAttribute('disabled');
     return;
