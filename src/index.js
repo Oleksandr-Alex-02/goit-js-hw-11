@@ -29,37 +29,46 @@ const jsGuard = document.querySelector('.js-guard');
 disabledBtnSearch();
 
 searchForm.addEventListener('submit', startScript);
-// clickBtn.addEventListener('click', httpsRequest);  //btn load-more
+// clickBtn.addEventListener('click', httpsRequest); //btn load-more
 
-function startScript(e) {
+async function startScript(e) {
   disabledBtnSearch();
   e.preventDefault();
 
-  // clickBtn.classList.remove('is-hiden');  //btn load-more
+  // clickBtn.classList.remove('is-hiden'); //btn load-more
   removeGallery();
   newApiServer.query = e.currentTarget.elements.searchQuery.value;
   newApiServer.resetPege();
   httpsRequest();
   e.target.reset();
-  // Notiflix.Notify.success(`Hooray! We found ${newApiServer.valueInput}.`);  //message
+  const ddd = await newApiServer.fethApiServes();
+  if (ddd.hits.length >= 1) {
+    Notiflix.Notify.success(
+      `Hooray! We found ${ddd.totalHits} ${newApiServer.valueInput}.`
+    );
+  }
+  observer.observe(jsGuard);
 }
 
 async function httpsRequest() {
   const ara = await newApiServer.fethApiServes();
   const totalHits = Math.ceil(ara.totalHits / newApiServer.per_page);
   const arr = await ara.hits;
-  if (totalHits === newApiServer.page - 1) {
-    Notiflix.Notify.info(
-      `We're sorry, but you've reached the end of search results.`
-    );
-    // clickBtn.classList.add('is-hiden');  //btn load-more
-  }
+
   if (arr.length === 0) {
     Notiflix.Notify.failure(
       `Sorry, there are no ${newApiServer.valueInput} matching your search query. Please try again.`
     );
   }
+
   markupGallery(arr);
+
+  if (totalHits === newApiServer.page - 1) {
+    Notiflix.Notify.info(
+      `We're sorry, but you've reached the end of search results.`
+    );
+    // clickBtn.classList.add('is-hiden'); //btn load-more
+  }
 }
 
 async function markupGallery(hits) {
@@ -67,7 +76,6 @@ async function markupGallery(hits) {
     '.gallery a',
     gallery.insertAdjacentHTML('beforeend', cards(hits))
   );
-  observer.observe(jsGuard);
 }
 
 function removeGallery() {
