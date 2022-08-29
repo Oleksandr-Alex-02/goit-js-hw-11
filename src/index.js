@@ -31,7 +31,7 @@ disabledBtnSearch();
 searchForm.addEventListener('submit', startScript);
 // clickBtn.addEventListener('click', httpsRequest); //btn load-more
 
-async function startScript(e) {
+function startScript(e) {
   disabledBtnSearch();
   e.preventDefault();
 
@@ -41,24 +41,18 @@ async function startScript(e) {
   newApiServer.resetPege();
   httpsRequest();
   e.target.reset();
-  const ddd = await newApiServer.fethApiServes();
-  if (ddd.hits.length >= 1) {
-    Notiflix.Notify.success(
-      `Hooray! We found ${ddd.totalHits} ${newApiServer.valueInput}.`
-    );
-  }
-  observer.observe(jsGuard);
+  // Notiflix.Notify.success(`Hooray! We found ${newApiServer.valueInput}.`);
 }
 
 async function httpsRequest() {
   const ara = await newApiServer.fethApiServes();
   const totalHits = Math.ceil(ara.totalHits / newApiServer.per_page);
   const arr = await ara.hits;
-
   if (arr.length === 0) {
     Notiflix.Notify.failure(
       `Sorry, there are no ${newApiServer.valueInput} matching your search query. Please try again.`
     );
+    return;
   }
 
   markupGallery(arr);
@@ -71,11 +65,12 @@ async function httpsRequest() {
   }
 }
 
-async function markupGallery(hits) {
+function markupGallery(hits) {
   new SimpleLightbox(
     '.gallery a',
     gallery.insertAdjacentHTML('beforeend', cards(hits))
   );
+  observer.observe(jsGuard);
 }
 
 function removeGallery() {
@@ -99,7 +94,7 @@ function controlBtnDisabled(e) {
 
 function updateList(entries) {
   entries.forEach(entry => {
-    if (entry.isIntersecting) {
+    if (entry.isIntersecting === true) {
       httpsRequest();
     }
   });
